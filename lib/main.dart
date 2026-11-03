@@ -23,7 +23,7 @@ class BuilderTrackerApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: buildTheme(),
         builder: (context, child) => DefaultTextStyle.merge(
-          style: GoogleFonts.alegreya(color: Pal.parchment),
+          style: GoogleFonts.inter(color: G.text),
           child: child!,
         ),
         home: HomeScreen(store: store),

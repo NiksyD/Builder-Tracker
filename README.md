@@ -25,6 +25,10 @@ A Clash of Clans upgrade tracker for **Home Village** and **Builder Base**. Impo
 - Alerts 10 minutes before an upgrade finishes, and again when it's done
 - Home-screen widget with Home Village / Builder Base tabs
 
+## Download
+
+Grab the latest APK from [Releases](../../releases/latest) and install it on your Android phone. You may need to allow installs from your browser or file manager.
+
 ## Use it
 
 The game doesn't expose live builder timers, so the app reads the official Data Export.

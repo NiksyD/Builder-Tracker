@@ -1,45 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Fantasy palette: stone, wood, parchment, gold.
-class Pal {
-  static const stoneDark = Color(0xFF1E1D22);
-  static const stoneMid = Color(0xFF34333A);
-  static const stoneLight = Color(0xFF4A4952);
-  static const woodDark = Color(0xFF3B2314);
-  static const wood = Color(0xFF6B4226);
-  static const woodLight = Color(0xFF8E5E36);
-  static const parchment = Color(0xFFF1E2B8);
-  static const parchmentDark = Color(0xFFD9C48F);
-  static const ink = Color(0xFF2B1D0E);
-  static const gold = Color(0xFFE2B33C);
-  static const goldDark = Color(0xFF9C7418);
-  static const green = Color(0xFF5E8C3A);
-  static const red = Color(0xFF9B2D20);
-  static const iron = Color(0xFF2A2A2E);
+/// Liquid-glass palette: deep gradient backdrop, white-tinted glass, system accents.
+class G {
+  static const bg0 = Color(0xFF0A0A0C);
+  static const bg1 = Color(0xFF18181C);
+  // Monochrome: every accent is white. Hierarchy comes from opacity and weight.
+  static const blue = Colors.white;
+  static const green = Colors.white;
+  static const orange = Colors.white;
+  static const red = Color(0xFFE5E5E5);
+  static const text = Colors.white;
+  static final textDim = Colors.white.withValues(alpha: 0.55);
+  static final hairline = Colors.white.withValues(alpha: 0.16);
 }
 
-ThemeData buildTheme() {
-  final base = ThemeData(
-    brightness: Brightness.dark,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: Pal.wood,
+ThemeData buildTheme() => ThemeData(
       brightness: Brightness.dark,
-      surface: Pal.stoneDark,
-    ),
-    scaffoldBackgroundColor: Pal.stoneDark,
-    useMaterial3: true,
-  );
-  return base;
-}
+      scaffoldBackgroundColor: G.bg0,
+      colorScheme: const ColorScheme.dark(primary: Colors.white, surface: G.bg0),
+      useMaterial3: true,
+    );
 
-/// Readable mixed-case serif for text on parchment.
-TextStyle inkStyle({double size = 16, FontWeight w = FontWeight.w600}) =>
-    GoogleFonts.alegreya(fontSize: size, fontWeight: w, color: Pal.ink, height: 1.15);
+TextStyle largeTitle() =>
+    GoogleFonts.inter(fontSize: 34, fontWeight: FontWeight.w800, color: G.text, letterSpacing: -0.8);
 
-TextStyle titleStyle({double size = 22}) => GoogleFonts.cinzel(
+TextStyle headline({double size = 18}) =>
+    GoogleFonts.inter(fontSize: size, fontWeight: FontWeight.w600, color: G.text, letterSpacing: -0.2);
+
+TextStyle body({double size = 16, Color? color, FontWeight w = FontWeight.w400}) =>
+    GoogleFonts.inter(fontSize: size, fontWeight: w, color: color ?? G.text);
+
+TextStyle dim({double size = 14}) => GoogleFonts.inter(fontSize: size, color: G.textDim);
+
+TextStyle timer({double size = 24, Color? color}) => GoogleFonts.inter(
       fontSize: size,
       fontWeight: FontWeight.w700,
-      color: Pal.gold,
-      shadows: const [Shadow(color: Colors.black87, blurRadius: 4, offset: Offset(1, 2))],
+      color: color ?? G.text,
+      letterSpacing: -0.5,
+      fontFeatures: const [FontFeature.tabularFigures()],
     );

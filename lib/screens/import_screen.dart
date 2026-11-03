@@ -4,9 +4,7 @@ import '../data/export_parser.dart';
 import '../data/game_data.dart';
 import '../data/tracker_store.dart';
 import '../theme/app_theme.dart';
-import '../widgets/parchment_card.dart';
-import '../widgets/stone_background.dart';
-import '../widgets/wood_panel.dart';
+import '../widgets/glass.dart';
 
 class ImportScreen extends StatefulWidget {
   final TrackerStore store;
@@ -40,58 +38,74 @@ class _ImportScreenState extends State<ImportScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+        extendBodyBehindAppBar: true,
         appBar: AppBar(
-          backgroundColor: Pal.woodDark,
-          title: Text('Import', style: titleStyle(size: 24)),
-          iconTheme: const IconThemeData(color: Pal.gold),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          iconTheme: const IconThemeData(color: G.text),
+          title: Text('Import', style: headline(size: 20)),
         ),
-        body: StoneBackground(
-          child: ListView(padding: const EdgeInsets.all(16), children: [
-            WoodPanel(
-              child: ParchmentCard(
+        body: GlassBackground(
+          child: SafeArea(
+            child: ListView(padding: const EdgeInsets.all(20), children: [
+              GlassCard(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('In Clash of Clans:', style: inkStyle(size: 19, w: FontWeight.w800)),
-                  const SizedBox(height: 6),
+                  Text('From Clash of Clans', style: headline(size: 20)),
+                  const SizedBox(height: 8),
                   Text(
-                    'Settings → More Settings → Help and Support → Data Export.\n'
+                    'Settings → More Settings → Help and Support → Data Export. '
                     'Copy the JSON, then paste it below.',
-                    style: inkStyle(size: 16, w: FontWeight.w500),
+                    style: dim(size: 15),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 16),
                   TextField(
                     controller: _ctrl,
                     maxLines: 8,
-                    style: const TextStyle(fontFamily: 'monospace', fontSize: 13, color: Pal.ink),
+                    style: const TextStyle(fontFamily: 'monospace', fontSize: 13, color: G.text),
+                    cursorColor: G.blue,
                     decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        hintText: '{"buildings": [...]}',
-                        hintStyle: inkStyle(size: 15, w: FontWeight.w500)
-                            .copyWith(color: Pal.ink.withValues(alpha: 0.6))),
+                      filled: true,
+                      fillColor: Colors.black.withValues(alpha: 0.35),
+                      hintText: '{"buildings": [...]}',
+                      hintStyle: dim(size: 14),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18), borderSide: BorderSide.none),
+                    ),
                   ),
                   if (_error != null)
                     Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Text(_error!, style: inkStyle(size: 16, w: FontWeight.w700).copyWith(color: Pal.red)),
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Text(_error!, style: body(size: 14, color: G.red)),
                     ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 16),
                   Row(children: [
                     OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                            foregroundColor: Pal.ink, side: const BorderSide(color: Pal.ink)),
-                        onPressed: _paste,
-                        icon: const Icon(Icons.paste),
-                        label: Text('Paste', style: inkStyle(size: 17, w: FontWeight.w800))),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: G.text,
+                        side: BorderSide(color: G.hairline),
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                      ),
+                      onPressed: _paste,
+                      icon: const Icon(Icons.content_paste_rounded, size: 18),
+                      label: Text('Paste', style: body(size: 15, w: FontWeight.w600)),
+                    ),
                     const Spacer(),
                     FilledButton(
-                        style: FilledButton.styleFrom(backgroundColor: Pal.wood),
-                        onPressed: _import,
-                        child: Text('Import',
-                            style: inkStyle(size: 17, w: FontWeight.w800).copyWith(color: Pal.parchment))),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: G.blue,
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
+                      ),
+                      onPressed: _import,
+                      child: Text('Import', style: body(size: 15, w: FontWeight.w700, color: G.bg0)),
+                    ),
                   ]),
                 ]),
               ),
-            ),
-          ]),
+            ]),
+          ),
         ),
       );
 }

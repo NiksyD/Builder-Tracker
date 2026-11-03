@@ -72,8 +72,8 @@ class BuilderWidgetProvider : AppWidgetProvider() {
         val homeSel = sel == "home"
         views.setInt(R.id.tab_home, "setBackgroundResource", if (homeSel) R.drawable.tab_selected else R.drawable.tab_unselected)
         views.setInt(R.id.tab_base, "setBackgroundResource", if (homeSel) R.drawable.tab_unselected else R.drawable.tab_selected)
-        views.setTextColor(R.id.tab_home, if (homeSel) 0xFF2B1D0E.toInt() else 0xFFF1E2B8.toInt())
-        views.setTextColor(R.id.tab_base, if (homeSel) 0xFFF1E2B8.toInt() else 0xFF2B1D0E.toInt())
+        views.setTextColor(R.id.tab_home, if (homeSel) 0xFFFFFFFF.toInt() else 0x8CFFFFFF.toInt())
+        views.setTextColor(R.id.tab_base, if (homeSel) 0x8CFFFFFF.toInt() else 0xFFFFFFFF.toInt())
         views.setOnClickPendingIntent(R.id.tab_home, selectIntent(context, "home", 10))
         views.setOnClickPendingIntent(R.id.tab_base, selectIntent(context, "builderBase", 11))
 

@@ -8,7 +8,7 @@
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#33000000"/>
+        android:background="#1FFFFFFF"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,9 +21,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="end"
-            android:fontFamily="serif"
+            android:fontFamily="sans-serif-medium"
             android:maxLines="1"
-            android:textColor="#2B1D0E"
+            android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:textStyle="bold"/>
         <Chronometer
@@ -31,8 +31,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:fontFamily="serif"
-            android:textColor="#2B1D0E"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#FFFFFF"
             android:textSize="17sp"
             android:textStyle="bold"/>
         <TextView
@@ -40,8 +40,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:fontFamily="serif"
-            android:textColor="#2F6B12"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#FFFFFF"
             android:textSize="17sp"
             android:textStyle="bold"
             android:visibility="gone"/>
