@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
+import '../models/account.dart';
 import '../models/upgrade.dart';
 
 /// Schedules two alerts per upgrade: a heads-up before it finishes and a
@@ -52,7 +53,7 @@ class NotificationService {
 
   /// Cancels everything and reschedules from [upgrades]. Cheap enough to call
   /// after every change.
-  Future<void> sync(List<Upgrade> upgrades) async {
+  Future<void> sync(List<Account> accounts) async {
     if (!_ready) return;
     await _plugin.cancelAllPendingNotifications();
     final android = _plugin.resolvePlatformSpecificImplementation<
@@ -76,14 +77,19 @@ class NotificationService {
       );
     }
 
-    for (final u in upgrades) {
-      final village = u.village == Village.home ? 'Home Village' : 'Builder Base';
-      if (u.endsAt.difference(now) > leadTime) {
-        await schedule(_id(u.id, 0), u.endsAt.subtract(leadTime), 'Almost ready · $village',
-            '${u.name} finishes in ${leadTime.inMinutes} minutes.');
+    final multi = accounts.length > 1;
+    for (final a in accounts) {
+      for (final u in a.upgrades) {
+        final v = u.village == Village.home ? 'Home Village' : 'Builder Base';
+        final where = multi ? '${a.name} · $v' : v;
+        final key = '${a.id}:${u.id}';
+        if (u.endsAt.difference(now) > leadTime) {
+          await schedule(_id(key, 0), u.endsAt.subtract(leadTime), 'Almost ready · $where',
+              '${u.name} finishes in ${leadTime.inMinutes} minutes.');
+        }
+        await schedule(_id(key, 1), u.endsAt, 'Builder free! · $where',
+            '${u.name} is complete. Start your next upgrade.');
       }
-      await schedule(_id(u.id, 1), u.endsAt, 'Builder free! · $village',
-          '${u.name} is complete. Start your next upgrade.');
     }
   }
 }

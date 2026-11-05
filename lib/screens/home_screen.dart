@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../data/tracker_store.dart';
+import '../models/account.dart';
 import '../models/upgrade.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass.dart';
@@ -74,6 +75,134 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future<String?> _askName(String title, {String initial = ''}) {
+    final c = TextEditingController(text: initial);
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: GlassCard(
+          padding: const EdgeInsets.all(24),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Text(title, style: headline(size: 20)),
+            const SizedBox(height: 16),
+            TextField(
+              controller: c,
+              autofocus: true,
+              maxLength: 24,
+              style: body(),
+              cursorColor: G.text,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.black.withValues(alpha: 0.35),
+                hintText: 'Account name',
+                hintStyle: dim(size: 15),
+                counterText: '',
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18), borderSide: BorderSide.none),
+              ),
+              onSubmitted: (v) => Navigator.pop(ctx, v),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: G.blue,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: const StadiumBorder(),
+                ),
+                onPressed: () => Navigator.pop(ctx, c.text),
+                child: Text('Save', style: body(w: FontWeight.w700, color: G.bg0)),
+              ),
+            ),
+          ]),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _accounts(TrackerStore store) async {
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => ListenableBuilder(
+        listenable: store,
+        builder: (ctx, _) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: GlassCard(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+              child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('Accounts', style: headline(size: 20)),
+                const SizedBox(height: 8),
+                for (final Account a in store.accounts)
+                  InkWell(
+                    borderRadius: BorderRadius.circular(14),
+                    onTap: () {
+                      store.switchTo(a.id);
+                      Navigator.pop(ctx);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(children: [
+                        Icon(a.id == store.activeId ? Icons.radio_button_checked : Icons.radio_button_off,
+                            size: 20, color: a.id == store.activeId ? G.text : G.textDim),
+                        const SizedBox(width: 12),
+                        Expanded(child: Text(a.name, style: body(size: 17))),
+                        IconButton(
+                          icon: Icon(Icons.edit_outlined, size: 20, color: G.textDim),
+                          onPressed: () async {
+                            final n = await _askName('Rename account', initial: a.name);
+                            if (n != null) store.rename(a.id, n);
+                          },
+                        ),
+                        if (store.accounts.length > 1)
+                          IconButton(
+                            icon: Icon(Icons.delete_outline, size: 20, color: G.textDim),
+                            onPressed: () async {
+                              final ok = await showDialog<bool>(
+                                context: context,
+                                builder: (c) => AlertDialog(
+                                  backgroundColor: G.bg1,
+                                  title: Text('Delete ${a.name}?', style: headline(size: 18)),
+                                  content: Text('Its timers will be removed.', style: dim(size: 15)),
+                                  actions: [
+                                    TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
+                                    TextButton(onPressed: () => Navigator.pop(c, true), child: const Text('Delete')),
+                                  ],
+                                ),
+                              );
+                              if (ok == true) store.removeAccount(a.id);
+                            },
+                          ),
+                      ]),
+                    ),
+                  ),
+                const SizedBox(height: 4),
+                TextButton.icon(
+                  onPressed: () async {
+                    final n = await _askName('New account');
+                    if (n == null) return;
+                    await store.addAccount(n);
+                    if (!mounted || !ctx.mounted) return;
+                    Navigator.pop(ctx);
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (_) => ImportScreen(store: store)));
+                  },
+                  style: TextButton.styleFrom(foregroundColor: G.text),
+                  icon: const Icon(Icons.add_rounded),
+                  label: Text('Add account', style: body(size: 16, w: FontWeight.w600)),
+                ),
+              ]),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -93,7 +222,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 16, 16, 12),
                   child: Row(children: [
-                    Expanded(child: Text('Builders', style: largeTitle())),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => _accounts(store),
+                        behavior: HitTestBehavior.opaque,
+                        child: Row(children: [
+                          Flexible(
+                              child: Text(store.active.name,
+                                  maxLines: 1, overflow: TextOverflow.ellipsis, style: largeTitle())),
+                          const SizedBox(width: 4),
+                          Icon(Icons.keyboard_arrow_down_rounded, size: 28, color: G.textDim),
+                        ]),
+                      ),
+                    ),
                     _RoundBtn(
                       Icons.file_download_outlined,
                       () => Navigator.push(context,

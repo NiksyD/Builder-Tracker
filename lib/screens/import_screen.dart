@@ -44,7 +44,7 @@ class _ImportScreenState extends State<ImportScreen> {
           elevation: 0,
           scrolledUnderElevation: 0,
           iconTheme: const IconThemeData(color: G.text),
-          title: Text('Import', style: headline(size: 20)),
+          title: Text('Import · ${widget.store.active.name}', style: headline(size: 20)),
         ),
         body: GlassBackground(
           child: SafeArea(
