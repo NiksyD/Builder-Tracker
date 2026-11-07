@@ -13,7 +13,7 @@ class BuilderWidgetService : RemoteViewsService() {
     override fun onGetViewFactory(intent: Intent): RemoteViewsFactory = Factory(applicationContext)
 
     private class Row(val name: String, val endsAt: Long?)
-    private class Section(val title: String, val rows: List<Row>)
+    private class Section(val title: String, val rows: List<Row>, val lab: Row)
     private class Account(val name: String, val sections: List<Section>)
 
     private class Factory(private val context: Context) : RemoteViewsFactory {
@@ -39,7 +39,13 @@ class BuilderWidgetService : RemoteViewsService() {
                         }
                         rows.sortBy { it.endsAt }
                         while (rows.size < v.getInt("total")) rows.add(Row("Builder ${rows.size + 1}", null))
-                        secs.add(Section(v.getString("title"), rows))
+                        val lb = v.optJSONObject("lab")
+                        val li = lb?.optJSONArray("items")
+                        val running = if (li != null && li.length() > 0) li.getJSONObject(0) else null
+                        val lab = if (running != null)
+                            Row("Lab · " + running.getString("name").replace("  ›  Level ", " · Lv "), running.getLong("endsAt"))
+                        else Row(lb?.optString("label", "Laboratory") ?: "Laboratory", null)
+                        secs.add(Section(v.getString("title"), rows, lab))
                     }
                     out.add(Account(a.optString("name", ""), secs))
                 }
@@ -64,6 +70,7 @@ class BuilderWidgetService : RemoteViewsService() {
                 h.setTextViewText(R.id.section_free, "${s.rows.size - busy} of ${s.rows.size} free")
                 v.addView(R.id.content, h)
                 s.rows.forEachIndexed { i, r -> v.addView(R.id.content, row(r, i, now)) }
+                v.addView(R.id.content, row(s.lab, 1, now))
             }
             v.setOnClickFillInIntent(R.id.item_root, Intent())
             return v

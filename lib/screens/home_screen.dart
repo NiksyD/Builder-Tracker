@@ -273,9 +273,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     ).createShader(r),
                     child: ListView.separated(
                       padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-                      itemCount: slots.length,
+                      itemCount: slots.length + 1,
                       separatorBuilder: (_, _) => const SizedBox(height: 14),
-                      itemBuilder: (_, i) => _BuilderCard(index: i + 1, upgrade: slots[i], now: _now),
+                      itemBuilder: (_, i) => i < slots.length
+                          ? _BuilderCard(index: i + 1, upgrade: slots[i], now: _now)
+                          : _BuilderCard(
+                              label: _village == Village.home ? 'Laboratory' : 'Star Laboratory',
+                              upgrade: store.labOf(_village),
+                              now: _now,
+                            ),
                     ),
                   ),
                 ),
@@ -309,9 +315,10 @@ class _RoundBtn extends StatelessWidget {
 
 class _BuilderCard extends StatelessWidget {
   final int index;
+  final String? label; // set for the laboratory card
   final Upgrade? upgrade;
   final DateTime now;
-  const _BuilderCard({required this.index, required this.upgrade, required this.now});
+  const _BuilderCard({this.index = 0, this.label, required this.upgrade, required this.now});
 
   @override
   Widget build(BuildContext context) {
@@ -321,7 +328,7 @@ class _BuilderCard extends StatelessWidget {
         child: Row(children: [
           const _Dot(G.green),
           const SizedBox(width: 12),
-          Expanded(child: Text('Builder $index', style: headline())),
+          Expanded(child: Text(label ?? 'Builder $index', style: headline())),
           Text('Free', style: body(size: 17, color: G.green, w: FontWeight.w700)),
         ]),
       );
@@ -334,7 +341,7 @@ class _BuilderCard extends StatelessWidget {
     return GlassCard(
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Expanded(child: Text('Builder $index', style: dim(size: 13))),
+          Expanded(child: Text(label ?? 'Builder $index', style: dim(size: 13))),
           Text(formatDuration(rem), style: timer(size: 22, color: G.text)),
         ]),
         const SizedBox(height: 4),

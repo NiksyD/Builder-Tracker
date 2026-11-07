@@ -4,6 +4,7 @@ import 'package:clash_builder/models/upgrade.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  labTest();
   test('parser converts remaining seconds to end times', () {
     final t = DateTime(2026, 1, 1);
     final r = ExportParser.parse(
@@ -24,5 +25,19 @@ void main() {
   test('formatDuration', () {
     expect(formatDuration(Duration.zero), 'Ready!');
     expect(formatDuration(const Duration(minutes: 9, seconds: 5)), '9m 5s');
+  });
+}
+
+void labTest() {
+  test('lab research is parsed separately from builders', () {
+    final r = ExportParser.parse(
+      '{"timestamp":1000,"buildings":[{"data":1000015,"lvl":1,"cnt":5}],'
+      '"units":[{"data":4000000,"lvl":4,"timer":3600}],'
+      '"units2":[{"data":4000037,"lvl":7,"timer":600}]}',
+      exportedAt: DateTime.fromMillisecondsSinceEpoch(0),
+    );
+    expect(r.upgrades.where((u) => u.lab).length, 2);
+    expect(r.upgrades.where((u) => !u.lab), isEmpty);
+    expect(r.homeBuilders, 5);
   });
 }

@@ -69,8 +69,15 @@ class TrackerStore extends ChangeNotifier {
     await _save();
   }
 
+  /// Research currently running in this village's laboratory, if any.
+  Upgrade? labOf(Village v) {
+    final l = upgrades.where((u) => u.village == v && u.lab).toList()
+      ..sort((a, b) => a.endsAt.compareTo(b.endsAt));
+    return l.isEmpty ? null : l.first;
+  }
+
   List<Upgrade> of(Village v) =>
-      (upgrades.where((u) => u.village == v).toList()..sort((a, b) => a.endsAt.compareTo(b.endsAt)));
+      (upgrades.where((u) => u.village == v && !u.lab).toList()..sort((a, b) => a.endsAt.compareTo(b.endsAt)));
 
   int builders(Village v) => v == Village.home ? homeBuilders : baseBuilders;
 

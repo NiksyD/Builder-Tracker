@@ -87,8 +87,10 @@ class NotificationService {
           await schedule(_id(key, 0), u.endsAt.subtract(leadTime), 'Almost ready · $where',
               '${u.name} finishes in ${leadTime.inMinutes} minutes.');
         }
-        await schedule(_id(key, 1), u.endsAt, 'Builder free! · $where',
-            '${u.name} is complete. Start your next upgrade.');
+        await schedule(_id(key, 1), u.endsAt, u.lab ? 'Lab free! · $where' : 'Builder free! · $where',
+            u.lab
+                ? '${u.name} research is complete.'
+                : '${u.name} is complete. Start your next upgrade.');
       }
     }
   }

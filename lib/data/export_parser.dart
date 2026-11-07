@@ -31,7 +31,7 @@ class ExportParser {
     final out = <Upgrade>[];
     var homeBuilders = 0;
 
-    void scan(String key, Village v) {
+    void scan(String key, Village v, {bool lab = false}) {
       final list = json[key];
       if (list is! List) return;
       for (final e in list) {
@@ -39,7 +39,7 @@ class ExportParser {
         final id = e['data'] as int?;
         final timer = e['timer'] as int?;
         if (id == null) continue;
-        if (v == Village.home && id == _builderHutId) {
+        if (!lab && v == Village.home && id == _builderHutId) {
           homeBuilders += (e['cnt'] as int?) ?? 1;
         }
         if (timer != null && timer > 0) {
@@ -49,7 +49,8 @@ class ExportParser {
           final total = target == null ? null : data.buildTime(id, target);
           final end = now.add(Duration(seconds: timer));
           out.add(Upgrade(
-            id: '${v.name}-$id-${out.length}',
+            id: '${lab ? 'lab' : v.name}-$id-${out.length}',
+            lab: lab,
             village: v,
             name: target != null ? '$name  ›  Level $target' : name,
             // Real total when known, so the progress bar is accurate.
@@ -63,6 +64,10 @@ class ExportParser {
     scan('buildings', Village.home);
     scan('traps', Village.home);
     scan('heroes', Village.home);
+    for (final k in const ['units', 'spells', 'siege_machines']) {
+      scan(k, Village.home, lab: true);
+    }
+    scan('units2', Village.builderBase, lab: true);
     scan('buildings2', Village.builderBase);
     scan('traps2', Village.builderBase);
     scan('heroes2', Village.builderBase);

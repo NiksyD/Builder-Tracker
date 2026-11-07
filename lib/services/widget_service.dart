@@ -29,9 +29,16 @@ class WidgetService {
                   'title': v == Village.home ? 'Home Village' : 'Builder Base',
                   'total': v == Village.home ? a.homeBuilders : a.baseBuilders,
                   'items': [
-                    for (final u in a.upgrades.where((u) => u.village == v))
+                    for (final u in a.upgrades.where((u) => u.village == v && !u.lab))
                       {'name': u.name, 'endsAt': u.endsAt.millisecondsSinceEpoch}
                   ],
+                  'lab': {
+                    'label': v == Village.home ? 'Laboratory' : 'Star Laboratory',
+                    'items': [
+                      for (final u in a.upgrades.where((u) => u.village == v && u.lab))
+                        {'name': u.name, 'endsAt': u.endsAt.millisecondsSinceEpoch}
+                    ],
+                  },
                 }
             ],
           }

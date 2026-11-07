@@ -9,12 +9,16 @@ class Upgrade {
   final DateTime startedAt;
   final DateTime endsAt;
 
+  /// True for laboratory research (uses the lab, not a builder).
+  final bool lab;
+
   const Upgrade({
     required this.id,
     required this.village,
     required this.name,
     required this.startedAt,
     required this.endsAt,
+    this.lab = false,
   });
 
   Duration remaining([DateTime? now]) {
@@ -36,6 +40,7 @@ class Upgrade {
         'name': name,
         'startedAt': startedAt.toIso8601String(),
         'endsAt': endsAt.toIso8601String(),
+        'lab': lab,
       };
 
   factory Upgrade.fromJson(Map<String, dynamic> j) => Upgrade(
@@ -44,6 +49,7 @@ class Upgrade {
         name: j['name'] as String,
         startedAt: DateTime.parse(j['startedAt'] as String),
         endsAt: DateTime.parse(j['endsAt'] as String),
+        lab: j['lab'] as bool? ?? false,
       );
 }
 
